@@ -21,7 +21,7 @@ DFA new_DFA(int nstates)
     DFA this = (DFA)malloc(sizeof(struct DFA));
     if (this == NULL)
     {
-        return NULL; // Out of memory...
+        return NULL; 
     }
     this->nstates = nstates;
 
@@ -47,6 +47,7 @@ void DFA_free(DFA dfa)
     }
 
     free(dfa->trans_table);
+    free(dfa->state);
 
     free(dfa);
 };

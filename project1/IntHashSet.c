@@ -19,20 +19,23 @@
 
 #include "IntHashSet.h"
 
-struct Node {
+struct Node
+{
 	int element;
-	struct Node* next;
+	struct Node *next;
 };
 typedef struct Node Node;
 
-struct IntHashSet {
+struct IntHashSet
+{
 	int size;
-	Node** buckets; // Array of pointers to first node in list for bucket
+	Node **buckets; // Array of pointers to first node in list for bucket
 	int count;
 };
 
-static Node* new_Node(int element) {
-	Node* this = (Node*)malloc(sizeof(struct Node));
+static Node *new_Node(int element)
+{
+	Node *this = (Node *)malloc(sizeof(struct Node));
 	this->element = element;
 	this->next = NULL;
 	return this;
@@ -41,14 +44,17 @@ static Node* new_Node(int element) {
 /**
  * Allocate and return a new empty IntHashSet.
  */
-IntHashSet new_IntHashSet(int size) {
+IntHashSet new_IntHashSet(int size)
+{
 	IntHashSet this = (IntHashSet)malloc(sizeof(struct IntHashSet));
-	if (this == NULL) {
+	if (this == NULL)
+	{
 		return NULL;
 	}
 	this->size = size;
-	this->buckets = (Node**)calloc(size, sizeof(Node*));
-	for (int i=0; i < size; i++) {
+	this->buckets = (Node **)calloc(size, sizeof(Node *));
+	for (int i = 0; i < size; i++)
+	{
 		this->buckets[i] = NULL;
 	}
 	this->count = 0;
@@ -58,15 +64,19 @@ IntHashSet new_IntHashSet(int size) {
 /**
  * Free the given IntHashSet.
  */
-void IntHashSet_free(IntHashSet this) {
-	if (this == NULL) {
+void IntHashSet_free(IntHashSet this)
+{
+	if (this == NULL)
+	{
 		return;
 	}
 	// Free all the nodes
-	for (int index=0; index < this->size; index++) {
-		Node* p = this->buckets[index];
-		while (p != NULL) {
-			Node* next = p->next;
+	for (int index = 0; index < this->size; index++)
+	{
+		Node *p = this->buckets[index];
+		while (p != NULL)
+		{
+			Node *next = p->next;
 			free(p);
 			p = next;
 		}
@@ -81,7 +91,8 @@ void IntHashSet_free(IntHashSet this) {
  * Very simple hash function for IntHashSet.
  * @see FOCS p415.
  */
-static int IntHashSet_hash(IntHashSet this, int element) {
+static int IntHashSet_hash(IntHashSet this, int element)
+{
 	int index = element % this->size;
 	return index;
 }
@@ -98,15 +109,21 @@ static int IntHashSet_hash(IntHashSet this, int element) {
  * We return true if the element was added or false if it was
  * already there, to support keeping track of the count of elements.
  */
-static bool IntHashSet_bucketInsert(int element, Node** pL) {
-	if ((*pL) == NULL) {
+static bool IntHashSet_bucketInsert(int element, Node **pL)
+{
+	if ((*pL) == NULL)
+	{
 		// Not found in bucket: append
 		(*pL) = new_Node(element);
 		return true; // Yes added
-	} else if ((*pL)->element == element) {
+	}
+	else if ((*pL)->element == element)
+	{
 		// Found in bucket
 		return false; // Not added
-	} else {
+	}
+	else
+	{
 		// Keep searching bucket
 		return IntHashSet_bucketInsert(element, &((*pL)->next));
 	}
@@ -116,9 +133,12 @@ static bool IntHashSet_bucketInsert(int element, Node** pL) {
  * Insert the given element into the given IntHashSet if
  * it isn't already present.
  */
-void IntHashSet_insert(IntHashSet this, int element) {
+void IntHashSet_insert(IntHashSet this, int element)
+{
 	int index = IntHashSet_hash(this, element);
-	if (IntHashSet_bucketInsert(element, &(this->buckets[index]))) {
+	
+	if (IntHashSet_bucketInsert(element, &(this->buckets[index])))
+	{
 		this->count += 1;
 	}
 }
@@ -127,10 +147,13 @@ void IntHashSet_insert(IntHashSet this, int element) {
  * Return true if the given element is in the given IntHashSet,
  * otherwise false.
  */
-bool IntHashSet_lookup(IntHashSet this, int element) {
+bool IntHashSet_lookup(IntHashSet this, int element)
+{
 	int index = IntHashSet_hash(this, element);
-	for (Node* p=this->buckets[index]; p != NULL; p=p->next) {
-		if (p->element == element) {
+	for (Node *p = this->buckets[index]; p != NULL; p = p->next)
+	{
+		if (p->element == element)
+		{
 			return true;
 		}
 	}
@@ -143,10 +166,13 @@ bool IntHashSet_lookup(IntHashSet this, int element) {
  * This will modify the first set unless the second set is empty or
  * all its elements are already in the first set.
  */
-void IntHashSet_union(IntHashSet this, const IntHashSet other) {
+void IntHashSet_union(IntHashSet this, const IntHashSet other)
+{
 	// Iterate over elements of other set, adding to this set
-	for (int index=0; index < other->size; index++) {
-		for (Node* p=other->buckets[index]; p != NULL; p=p->next) {
+	for (int index = 0; index < other->size; index++)
+	{
+		for (Node *p = other->buckets[index]; p != NULL; p = p->next)
+		{
 			int element = p->element;
 			IntHashSet_insert(this, element);
 		}
@@ -156,15 +182,19 @@ void IntHashSet_union(IntHashSet this, const IntHashSet other) {
 /**
  * Print the given IntHashSet to stdout.
  */
-void IntHashSet_print(IntHashSet this) {
+void IntHashSet_print(IntHashSet this)
+{
 	printf("{");
 	int n = 0;
-	for (int index=0; index < this->size; index++) {
-		for (Node* p=this->buckets[index]; p != NULL; p=p->next) {
+	for (int index = 0; index < this->size; index++)
+	{
+		for (Node *p = this->buckets[index]; p != NULL; p = p->next)
+		{
 			int element = p->element;
 			printf("%d", element);
 			n += 1;
-			if (n < this->count) {
+			if (n < this->count)
+			{
 				printf(",");
 			}
 		}
@@ -175,7 +205,8 @@ void IntHashSet_print(IntHashSet this) {
 /**
  * Return the number of elements (ints) in the given IntHashSet.
  */
-int IntHashSet_count(IntHashSet this) {
+int IntHashSet_count(IntHashSet this)
+{
 	// Cached count saves scanning the entire hashtable every time
 	return this->count;
 }
@@ -183,7 +214,8 @@ int IntHashSet_count(IntHashSet this) {
 /**
  * Return true if this IntHashSet is empty (contains no elements).
  */
-bool IntHashSet_isEmpty(IntHashSet this) {
+bool IntHashSet_isEmpty(IntHashSet this)
+{
 	// Ditto
 	return this->count == 0;
 }
@@ -192,17 +224,22 @@ bool IntHashSet_isEmpty(IntHashSet this) {
  * Return true if the two given IntHashSets contain exactly the
  * name elements (ints), otherwise false.
  */
-bool IntHashSet_equals(IntHashSet this, IntHashSet other) {
+bool IntHashSet_equals(IntHashSet this, IntHashSet other)
+{
 	// Cached count may short-circuit this test
-	if (this->count != other->count) {
+	if (this->count != other->count)
+	{
 		return false;
 	}
 	// Otherwise have to scan and test each element
 	// You might be able to figure out which is better to scan over...
-	for (int index=0; index < this->size; index++) {
-		for (Node* p=this->buckets[index]; p != NULL; p=p->next) {
+	for (int index = 0; index < this->size; index++)
+	{
+		for (Node *p = this->buckets[index]; p != NULL; p = p->next)
+		{
 			int element = p->element;
-			if (!IntHashSet_lookup(other, element)) {
+			if (!IntHashSet_lookup(other, element))
+			{
 				return false;
 			}
 		}
@@ -215,9 +252,12 @@ bool IntHashSet_equals(IntHashSet this, IntHashSet other) {
  * IntHashSet, calling the given function on each int value
  * one after the other.
  */
-void IntHashSet_iterate(const IntHashSet this, void (*func)(int)) {
-	for (int index=0; index < this->size; index++) {
-		for (Node* p=this->buckets[index]; p != NULL; p=p->next) {
+void IntHashSet_iterate(const IntHashSet this, void (*func)(int))
+{
+	for (int index = 0; index < this->size; index++)
+	{
+		for (Node *p = this->buckets[index]; p != NULL; p = p->next)
+		{
 			int element = p->element;
 			func(element);
 		}
@@ -228,18 +268,20 @@ void IntHashSet_iterate(const IntHashSet this, void (*func)(int)) {
  * An IntHashSetIterator iterates over the elements (ints)
  * in an IntHashSet.
  */
-struct IntHashSetIterator {
+struct IntHashSetIterator
+{
 	IntHashSet set;
 	int count;
 	int index;	// bucket
-	Node *node;	// Node within bucket
+	Node *node; // Node within bucket
 };
 
 /**
  * Return an IntHashSetIterator for the given IntHashSet.
  * Don't forget to free() this when you're done iterating.
  */
-IntHashSetIterator IntHashSet_iterator(const IntHashSet this) {
+IntHashSetIterator IntHashSet_iterator(const IntHashSet this)
+{
 	IntHashSetIterator iterator = (IntHashSetIterator)malloc(sizeof(struct IntHashSetIterator));
 	iterator->set = this;
 	iterator->count = 0;
@@ -252,7 +294,8 @@ IntHashSetIterator IntHashSet_iterator(const IntHashSet this) {
  * Return true if the next call to IntHashSetIterator_next on the given
  * IntHashSetIterator will not fail.
  */
-bool IntHashSetIterator_hasNext(const IntHashSetIterator this) {
+bool IntHashSetIterator_hasNext(const IntHashSetIterator this)
+{
 	return this->count < this->set->count;
 }
 
@@ -261,9 +304,12 @@ bool IntHashSetIterator_hasNext(const IntHashSetIterator this) {
  * IntHashSetIterator, or -1 if there is no such element (even though
  * -1 could be a value in an IntHashSet).
  */
-int IntHashSetIterator_next(IntHashSetIterator this) {
-	while (this->node == NULL) {
-		if (this->index >= this->set->size) {
+int IntHashSetIterator_next(IntHashSetIterator this)
+{
+	while (this->node == NULL)
+	{
+		if (this->index >= this->set->size)
+		{
 			// Not found!
 			return -1;
 		}
@@ -280,22 +326,28 @@ int IntHashSetIterator_next(IntHashSetIterator this) {
  * Return the string representation of the given IntHashSet.
  * Don't forget to free() this string.
  */
-char* IntHashSet_toString(IntHashSet this) {
+char *IntHashSet_toString(IntHashSet this)
+{
 	char *result = NULL;
 	IntHashSetIterator iterator = IntHashSet_iterator(this);
-	while (IntHashSetIterator_hasNext(iterator)) {
+	while (IntHashSetIterator_hasNext(iterator))
+	{
 		int value = IntHashSetIterator_next(iterator);
 		static char buf[256];
-		snprintf(buf, sizeof(buf)-1, "%d", value);
-		if (IntHashSetIterator_hasNext(iterator)) {
+		snprintf(buf, sizeof(buf) - 1, "%d", value);
+		if (IntHashSetIterator_hasNext(iterator))
+		{
 			strcat(buf, ",");
 		}
-		if (result == NULL) {
-			result = malloc(strlen(buf)+1);
+		if (result == NULL)
+		{
+			result = malloc(strlen(buf) + 1);
 			strcpy(result, buf);
-		} else {
+		}
+		else
+		{
 			char *old_result = result;
-			result = (char*)malloc(strlen(old_result)+strlen(buf)+1);
+			result = (char *)malloc(strlen(old_result) + strlen(buf) + 1);
 			strcpy(result, old_result);
 			strcat(result, buf);
 			free(old_result);
@@ -305,13 +357,41 @@ char* IntHashSet_toString(IntHashSet this) {
 	return result;
 }
 
+void test_iterator()
+{
+	// IntHashSet current = new_IntHashSet(100);
+	// IntHashSet_insert(current, 0);
+	// IntHashSet_insert(current, 1);
+	// IntHashSet_insert(current, 2);
+	// IntHashSet_insert(current, 3);
+
+	// IntHashSetIterator it = IntHashSet_iterator(current);
+	// while (IntHashSetIterator_hasNext(it))
+	// {
+	// 	int temp_src = IntHashSetIterator_next(it);
+	// 	printf("%d", temp_src);
+	// }
+
+	IntHashSet a = new_IntHashSet(10);
+	IntHashSet b = new_IntHashSet(10);
+	IntHashSet_insert(a,1);
+	IntHashSet_insert(b,2);
+	a=b;
+	IntHashSet_insert(b,6);
+	IntHashSet_print(a);
+	
+	
+}
+
 #ifdef MAIN
 
-static void callback(int element) {
+static void callback(int element)
+{
 	printf("callback: %d\n", element);
 }
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[])
+{
 	printf("creating set with size 7...\n");
 	IntHashSet set1 = new_IntHashSet(7);
 	printf("testing insert...\n");
@@ -345,7 +425,8 @@ int main(int argc, char* argv[]) {
 	IntHashSet_iterate(set1, callback);
 	printf("testing iterator...\n");
 	IntHashSetIterator iterator = IntHashSet_iterator(set1);
-	while (IntHashSetIterator_hasNext(iterator)) {
+	while (IntHashSetIterator_hasNext(iterator))
+	{
 		int element = IntHashSetIterator_next(iterator);
 		printf("%d ", element);
 	}
@@ -371,7 +452,8 @@ int main(int argc, char* argv[]) {
 	printf("set1 equals set2? %d\n", IntHashSet_equals(set1, set2));
 	printf("set2 equals set1? %d\n", IntHashSet_equals(set2, set1));
 	printf("testing set1 with more elements...\n");
-	for (int i=8; i < 100; i++) {
+	for (int i = 8; i < 100; i++)
+	{
 		IntHashSet_insert(set1, i);
 	}
 	IntHashSet_print(set1);
@@ -391,4 +473,3 @@ int main(int argc, char* argv[]) {
 }
 
 #endif
-

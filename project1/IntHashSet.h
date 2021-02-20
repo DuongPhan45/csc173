@@ -24,5 +24,6 @@ extern bool IntHashSetIterator_hasNext(const IntHashSetIterator this);
 extern int IntHashSetIterator_next(IntHashSetIterator this);
 
 extern char* IntHashSet_toString(IntHashSet this);
+extern void test_iterator();
 
 #endif
